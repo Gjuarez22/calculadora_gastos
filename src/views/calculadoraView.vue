@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-green-100 min-h-screen p-3">
+  <div class="bg-green-100 p-10">
     <div class="p-4 bg-green-400 grid grid-cols-2 gap-3 rounded-2xl sticky top-0 z-30 shadow-md">
       <!-- Cuadro 1: Salario -->
       <div class="bg-green-300 p-3 rounded-lg">

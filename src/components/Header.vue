@@ -11,17 +11,14 @@ const navigation = [
 
 <template>
   <!-- HEADER PARA COMPUTADORAS (Desktop) -->
-  <header class="hidden md:flex sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md px-6 py-4 justify-between items-center">
-    <div class="text-xl font-bold text-indigo-600">Calculadora Gastos</div>
+  <header class="hidden md:flex sticky top-0 z-50 w-full border-b bg-green-900 text-white backdrop-blur-md px-6 py-4 gap-6 items-center">
+    <div class="text-xl font-bold">Calculadora Gastos</div>
     <nav class="flex gap-8">
       <a v-for="item in navigation" :key="item.name" :href="item.href" 
-         class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">
+         class=" hover:text-green-700 font-medium transition-colors">
         {{ item.name }}
       </a>
     </nav>
-    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-      Cerrar Sesión
-    </button>
   </header>
 
   <!-- MENÚ INFERIOR PARA CELULARES (Mobile) -->
