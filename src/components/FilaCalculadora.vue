@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FilaCalculadoraModel } from '@/models/filaCalculadora.model'
+import type { FilaCalculadoraModel } from '../models/FilaCalculadora.model'
 
 // defineModel nos da una referencia reactiva al objeto que viene del padre
 const modelo = defineModel<FilaCalculadoraModel>({ required: true })

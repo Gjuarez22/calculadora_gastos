@@ -2,12 +2,15 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
+import { registerSW } from 'virtual:pwa-register'
 
 /* --- CONFIGURACIÓN DE FONTAWESOME --- */
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+
+registerSW({ immediate: true })
 
 library.add(faPlus)
 

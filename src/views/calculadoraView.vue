@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FilaCalculadoraModel } from '@/models/filaCalculadora.model'
+import type { FilaCalculadoraModel } from '../models/FilaCalculadora.model'
 import { computed, ref } from 'vue'
 import FilaCalculadora from '../components/FilaCalculadora.vue'
 
