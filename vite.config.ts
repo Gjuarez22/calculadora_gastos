@@ -24,12 +24,12 @@ export default defineConfig({
         theme_color: '#4ade80', // El verde de tu app (green-400)
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'pwa-512x512.png', // Usa el mismo mientras consigues uno de 512 real
+            src: '/pwa-512x512.png', // Usa el mismo mientras consigues uno de 512 real
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable', // <--- AGREGA ESTO (es vital para Android)
