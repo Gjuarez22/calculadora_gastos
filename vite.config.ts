@@ -29,7 +29,7 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: 'pwa-515x512.png', // Usa el mismo mientras consigues uno de 512 real
+            src: 'pwa-512x512.png', // Usa el mismo mientras consigues uno de 512 real
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable', // <--- AGREGA ESTO (es vital para Android)
