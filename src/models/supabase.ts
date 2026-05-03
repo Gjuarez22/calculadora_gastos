@@ -44,18 +44,21 @@ export type Database = {
           descripcion: string | null
           id: number
           nombre: string
+          salario: number
         }
         Insert: {
           created_at?: string
           descripcion?: string | null
           id?: number
           nombre: string
+          salario?: number
         }
         Update: {
           created_at?: string
           descripcion?: string | null
           id?: number
           nombre?: string
+          salario?: number
         }
         Relationships: []
       }

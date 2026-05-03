@@ -1,13 +1,16 @@
+import type { NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
 import { supabase } from '../lib/supabaseClient'
+import type { TablesInsert } from '@/models/supabase'
+import type { PresupuestoViewModel } from '@/models/presupuesto.viewmodel'
 
-export const gastosService = {
+export const PresupuestoService = {
   // Traer todos los gastos
   async getAll() {
     const { data, error } = await supabase
       .from('cal.presupuesto')
       .select('*')
       .order('created_at', { ascending: false })
-    
+
     if (error) throw error
     return data
   },
@@ -21,4 +24,31 @@ export const gastosService = {
     if (error) throw error
     return data
   }*/
+  async guardarPresupuestoCompleto(dto: NuevoPresupuestoDto): Promise<PresupuestoViewModel> {
+    const presupuestoGuardar: TablesInsert<'cal.presupuesto'> = {
+      nombre: dto.presupuesto,
+      descripcion: dto.descripcionPresupuesto,
+      salario: dto.salario,
+    }
+    const nuevoPresupuestoRespuesta = await supabase
+      .from('cal.presupuesto')
+      .insert(presupuestoGuardar)
+      .select('*')
+      .single()
+
+    const nuevoPresupuesto = nuevoPresupuestoRespuesta.data
+
+    const filas: TablesInsert<'cal.gasto'>[] = dto.filas.map((x) => ({
+      monto: x.monto,
+      nombre: x.descripcion,
+      presupuesto_id: nuevoPresupuesto?.id!,
+    }))
+
+    const nuevasFilas = await supabase.from('cal.gasto').insert(filas).select('*')
+
+    return {
+      filas: nuevasFilas.data!,
+      presupuesto: nuevoPresupuesto!,
+    }
+  },
 }

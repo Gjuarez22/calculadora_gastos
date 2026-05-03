@@ -1,1 +1,5 @@
 @import 'tailwindcss';
+.campo-obligatorio::after {
+  content: ' *';
+  color: #dc2626;
+}
