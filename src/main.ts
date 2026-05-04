@@ -8,12 +8,18 @@ import { registerSW } from 'virtual:pwa-register'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import { faPlus, faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faPlus,
+  faSave,
+  faTrash,
+  faChevronDown,
+  faCircleCheck,
+  faCircleExclamation,
+} from '@fortawesome/free-solid-svg-icons'
 
 registerSW({ immediate: true })
 
-library.add(faPlus, faSave, faTrash)
-
+library.add(faPlus, faSave, faTrash, faChevronDown, faCircleCheck, faCircleExclamation)
 const app = createApp(App)
 
 app.component('font-awesome-icon', FontAwesomeIcon)

@@ -1,10 +1,14 @@
 import type { NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
 import { supabase } from '../lib/supabaseClient'
 import type { TablesInsert } from '@/models/supabase'
-import type { PresupuestoViewModel } from '@/models/presupuesto.viewmodel'
+import type { PresupuestoViewModel } from '@/models/Presupuesto.ViewModel'
 
 export const PresupuestoService = {
-  // Traer todos los gastos
+  async eliminar(id: number) {
+    await supabase.from('cal.gasto').delete().eq('presupuesto_id', id)
+    const { data } = await supabase.from('cal.presupuesto').delete().eq('id', id)
+    return data
+  },
   async getAll() {
     const { data, error } = await supabase
       .from('cal.presupuesto')
