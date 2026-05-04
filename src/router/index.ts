@@ -6,13 +6,18 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Calculadora',
-      component: calculadoraView,
+      name: 'PresupuestoHome',
+      component: PresupuestoView,
     },
     {
       path: '/presupuesto',
       name: 'Presupuesto',
       component: PresupuestoView,
+    },
+    {
+      path: '/calculadora/:id?',
+      name: 'calculadora',
+      component: calculadoraView,
     },
   ],
 })

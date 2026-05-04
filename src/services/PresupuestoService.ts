@@ -4,6 +4,20 @@ import type { TablesInsert } from '@/models/supabase'
 import type { PresupuestoViewModel } from '@/models/Presupuesto.ViewModel'
 
 export const PresupuestoService = {
+  async ver(id: number): Promise<PresupuestoViewModel> {
+    const consultaPresupuesto = await supabase
+      .from('cal.presupuesto')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    const consultaGastos = await supabase.from('cal.gasto').select('*').eq('presupuesto_id', id)
+
+    return {
+      filas: consultaGastos.data!,
+      presupuesto: consultaPresupuesto.data!,
+    }
+  },
   async eliminar(id: number) {
     await supabase.from('cal.gasto').delete().eq('presupuesto_id', id)
     const { data } = await supabase.from('cal.presupuesto').delete().eq('id', id)

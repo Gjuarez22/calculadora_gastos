@@ -15,11 +15,24 @@ import {
   faChevronDown,
   faCircleCheck,
   faCircleExclamation,
+  faEye,
+  faArrowAltCircleRight,
+  faArrowAltCircleLeft,
 } from '@fortawesome/free-solid-svg-icons'
 
 registerSW({ immediate: true })
 
-library.add(faPlus, faSave, faTrash, faChevronDown, faCircleCheck, faCircleExclamation)
+library.add(
+  faPlus,
+  faSave,
+  faTrash,
+  faChevronDown,
+  faCircleCheck,
+  faCircleExclamation,
+  faEye,
+  faArrowAltCircleLeft,
+  faArrowAltCircleRight,
+)
 const app = createApp(App)
 
 app.component('font-awesome-icon', FontAwesomeIcon)

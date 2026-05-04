@@ -1,12 +1,25 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import FilaCalculadora from '../components/FilaCalculadora.vue'
 import type { PresupuestoViewModel } from '@/models/Presupuesto.ViewModel' // Asegurado el casing correcto
 import Toast from '@/components/Toast.vue'
 import type { NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
 import { PresupuestoService } from '@/services/PresupuestoService'
 import { CostoService } from '@/services/CostoService'
+import { useRoute, useRouter } from 'vue-router'
 
+const routerInst = useRoute()
+const rounterInst = useRouter()
+onMounted(async () => {
+  const id = routerInst.params.id as string
+  if (id !== '') {
+    const idVer = parseInt(id)
+    const presupuestoRes = await PresupuestoService.ver(idVer)
+
+    console.log(presupuestoRes)
+    presupuesto.value = presupuestoRes
+  }
+})
 const toastRef = ref<InstanceType<typeof Toast> | null>(null) // 2. Crea la ref para acceder al Toast
 
 //@section: signals
@@ -73,8 +86,6 @@ const filasSonValidas = computed(() => {
 
 //@section: Funciones
 const guardarPResupuesto = async () => {
-  console.log('guardar presupeusto')
-  toastRef.value?.mostrar('Presupuesto guardado correctamente.', 'success')
   // Marcamos que se intentó guardar para activar el feedback visual
   fueEnviado.value = true
 
@@ -140,12 +151,24 @@ const formatCurrency = (valor: number) => {
 
 <template>
   <Toast ref="toastRef" />
-  <div class="p-4 min-h-screen">
-    <!-- Header de la calculadora -->
-    <div class="p-4 bg-green-400 grid grid-cols-2 gap-3 rounded-2xl sticky top-0 z-30 shadow-md">
-      <div class="grid col-span-2 justify-items-end mt-3">
+
+  <div class="p-4 min-h-screen mb-24 max-w-5xl mx-auto">
+    <!-- HEADER: Sticky en móvil (top-0), normal en PC (md:static) -->
+    <div
+      class="p-4 bg-green-400 grid grid-cols-2 gap-3 rounded-2xl shadow-md sticky top-0 z-40 md:static md:mb-6"
+    >
+      <div class="flex col-span-2 justify-between mt-3 md:mt-0">
         <button
-          class="p-3 rounded-2xl text-white flex items-center gap-2 transition-all active:scale-95"
+          class="p-3 rounded-2xl mb-3 text-white flex items-center gap-2 transition-all active:scale-95 bg-gray-600"
+          @click="() => rounterInst.push('/presupuesto')"
+          :disabled="cargando"
+        >
+          <font-awesome-icon icon="fa-solid fa-arrow-alt-circle-left" class="text-xl" />
+          <span>Atras</span>
+        </button>
+
+        <button
+          class="p-3 rounded-2xl mb-3 text-white flex items-center gap-2 transition-all active:scale-95"
           :class="[
             cargando ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-900',
             fueEnviado && !dtoValido
@@ -158,12 +181,15 @@ const formatCurrency = (valor: number) => {
           <font-awesome-icon icon="fa-solid fa-save" class="text-xl" />
           <span>{{ cargando ? 'Guardando...' : 'Guardar' }}</span>
         </button>
-
-        <!-- Mensaje general de error -->
-        <p v-if="fueEnviado && !dtoValido" class="text-red-900 font-bold text-sm mt-2 text-right">
-          Revisa los campos en rojo antes de guardar.
-        </p>
       </div>
+
+      <!-- Mensaje general de error -->
+      <p
+        v-if="fueEnviado && !dtoValido"
+        class="col-span-2 text-red-900 font-bold text-sm text-right -mt-4"
+      >
+        Revisa los campos en rojo antes de guardar.
+      </p>
 
       <!-- Nombre del presupuesto -->
       <div class="col-span-2 bg-green-300 p-3 rounded-lg">
@@ -253,23 +279,25 @@ const formatCurrency = (valor: number) => {
 
     <!-- LISTA DE FILAS -->
     <div
-      class="bg-green-400 rounded-2xl p-3 mt-4 mb-24"
+      class="bg-green-400 rounded-2xl p-4 mt-4 md:mt-0"
       :class="{ 'border-2 border-red-500 bg-red-200': fueEnviado && !filasSonValidas }"
     >
-      <p v-if="fueEnviado && !filasSonValidas" class="text-red-800 font-bold mb-2 text-center">
+      <p v-if="fueEnviado && !filasSonValidas" class="text-red-800 font-bold mb-4 text-center">
         Debes agregar al menos un gasto y rellenar sus campos.
       </p>
 
-      <FilaCalculadora
-        v-for="(fila, index) in presupuesto.filas"
-        :key="index"
-        v-model="presupuesto.filas[index]!"
-        @eliminar="eliminarFila(index)"
-      />
+      <div class="flex flex-col gap-3">
+        <FilaCalculadora
+          v-for="(fila, index) in presupuesto.filas"
+          :key="index"
+          v-model="presupuesto.filas[index]!"
+          @eliminar="eliminarFila(index)"
+        />
+      </div>
     </div>
 
     <!-- Botón flotante para agregar -->
-    <div class="fixed bottom-18 right-10 z-50">
+    <div class="fixed bottom-15 right-8 z-50">
       <button
         @click="agregarFila"
         class="rounded-full bg-green-900 w-16 h-16 shadow-2xl transition-transform active:scale-95 hover:scale-110 flex items-center justify-center"

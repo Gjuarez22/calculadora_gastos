@@ -1,20 +1,38 @@
 <template>
   <div class="bg-green-100 p-5 h-[calc(100vh-80px)] flex flex-col">
-    <label class="font-bold text-2xl mb-4 shrink-0">Presupuestos ingresados</label>
+    <div class="flex justify-between mb-2 gap-2">
+      <label class="font-bold text-2xl mb-4 shrink-0">Presupuestos ingresados</label>
 
+      <button
+        class="p-3 bg-purple-800 text-white rounded-lg transition-transform active:scale-95 hover:scale-105"
+        @click="() => routerInst.push('/calculadora')"
+      >
+        <font-awesome-icon icon="fa-solid fa-plus" />
+
+        Nuevo
+      </button>
+    </div>
     <div class="bg-green-600 rounded-2xl flex-1 overflow-y-auto p-4">
       <div
         v-for="pre in presupuestos"
         :key="pre.id"
-        class="flex justify-between bg-white p-3 mb-2 rounded shadow transition-transform active:scale-95 hover:scale-105 cursor-pointer"
+        class="flex justify-between bg-white p-3 mb-2 rounded shadow transition-transform active:scale-90 hover:scale-95 cursor-pointer"
       >
         <span> {{ pre.nombre }}</span>
-        <button
-          class="p-3 bg-red-600 text-white rounded-lg transition-transform active:scale-95 hover:scale-105"
-          @click="eliminar(pre)"
-        >
-          <font-awesome-icon icon="fa-solid fa-trash" />
-        </button>
+        <div class="flex gap-1">
+          <button
+            class="p-3 bg-red-600 text-white rounded-lg transition-transform active:scale-95 hover:scale-105"
+            @click="eliminar(pre)"
+          >
+            <font-awesome-icon icon="fa-solid fa-trash" />
+          </button>
+          <button
+            class="p-3 bg-yellow-500 text-white rounded-lg transition-transform active:scale-95 hover:scale-105"
+            @click="ver(pre)"
+          >
+            <font-awesome-icon icon="fa-solid fa-eye" />
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -47,17 +65,23 @@ import { PresupuestoService } from '../services/PresupuestoService'
 import Modal from '@/components/Modal.vue'
 import Toast from './Toast.vue'
 import Spinner from '@/components/Spinner.vue'
-const toastRef = ref<InstanceType<typeof Toast> | null>(null) // 2. Crea la ref para acceder al Toast
+import { useRouter } from 'vue-router'
+const toastRef = ref<InstanceType<typeof Toast> | null>(null)
 
 const mostrarModal = ref(false)
 const presupuestos = ref<Tables<'cal.presupuesto'>[]>([])
 const presupuestoSeleccionado = ref<Tables<'cal.presupuesto'> | undefined>(undefined)
-
 const cargando = ref(false)
+
+const routerInst = useRouter()
+
 onMounted(async () => {
   const res = await PresupuestoService.getAll()
   presupuestos.value = res
 })
+const ver = (presupuesto: Tables<'cal.presupuesto'>) => {
+  routerInst.push({ name: 'calculadora', params: { id: presupuesto.id } })
+}
 
 const eliminar = (presupuesto: Tables<'cal.presupuesto'>) => {
   presupuestoSeleccionado.value = presupuesto
