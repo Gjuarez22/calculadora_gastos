@@ -13,6 +13,7 @@
       </button>
     </div>
     <div class="bg-green-600 rounded-2xl flex-1 overflow-y-auto p-4">
+      <Spinner v-if="cargandoLista" />
       <div
         v-for="pre in presupuestos"
         :key="pre.id"
@@ -72,12 +73,14 @@ const mostrarModal = ref(false)
 const presupuestos = ref<Tables<'cal.presupuesto'>[]>([])
 const presupuestoSeleccionado = ref<Tables<'cal.presupuesto'> | undefined>(undefined)
 const cargando = ref(false)
+const cargandoLista = ref(true)
 
 const routerInst = useRouter()
 
 onMounted(async () => {
   const res = await PresupuestoService.getAll()
   presupuestos.value = res
+  cargandoLista.value = false
 })
 const ver = (presupuesto: Tables<'cal.presupuesto'>) => {
   routerInst.push({ name: 'calculadora', params: { id: presupuesto.id } })

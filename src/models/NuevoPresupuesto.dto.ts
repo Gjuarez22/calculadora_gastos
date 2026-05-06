@@ -7,3 +7,7 @@ export interface NuevoPresupuestoDto {
   salario: number
   filas: FilaCalculadoraModel[]
 }
+
+export interface EditarPesupuestoDto extends NuevoPresupuestoDto {
+  id: number
+}

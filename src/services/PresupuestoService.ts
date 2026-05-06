@@ -1,9 +1,52 @@
-import type { NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
+import type { EditarPesupuestoDto, NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
 import { supabase } from '../lib/supabaseClient'
 import type { TablesInsert } from '@/models/supabase'
 import type { PresupuestoViewModel } from '@/models/Presupuesto.ViewModel'
 
 export const PresupuestoService = {
+  async editarPresupuestoCompleto(dto: EditarPesupuestoDto): Promise<PresupuestoViewModel> {
+    const datosActuales = await this.ver(dto.id)
+    datosActuales.presupuesto.descripcion = dto.descripcionPresupuesto ?? null
+    datosActuales.presupuesto.salario = dto.salario
+    datosActuales.presupuesto.nombre = dto.presupuesto
+
+    const { data: presupuestoEditado, error: errorP } = await supabase
+      .from('cal.presupuesto')
+      .update(datosActuales.presupuesto)
+      .eq('id', dto.id)
+      .select('*')
+      .single()
+
+    if (errorP) throw new Error(`Error al actualizar presupuesto: ${errorP.message}`)
+
+    const gastosParaActualizar = dto.filas.map((gasto) => ({
+      id: gasto.id,
+      nombre: gasto.descripcion,
+      monto: gasto.monto,
+      presupuesto_id: dto.id,
+    }))
+
+    const { data: gastosEditados, error: errorG } = await supabase
+      .from('cal.gasto')
+      .upsert(gastosParaActualizar, { onConflict: 'id' })
+      .select('*')
+
+    if (errorG) throw new Error(`Error al actualizar gastos: ${errorG.message}`)
+
+    const idsMantener = gastosParaActualizar.filter((g) => g.id).map((g) => g.id)
+    if (idsMantener.length > 0) {
+      await supabase
+        .from('cal.gasto')
+        .delete()
+        .eq('presupuesto_id', dto.id)
+        .not('id', 'in', `(${idsMantener.join(',')})`)
+    }
+
+    return {
+      presupuesto: presupuestoEditado,
+      filas: gastosEditados, // Asumiendo que tu ViewModel permite retornar los gastos
+    }
+  },
   async ver(id: number): Promise<PresupuestoViewModel> {
     const consultaPresupuesto = await supabase
       .from('cal.presupuesto')

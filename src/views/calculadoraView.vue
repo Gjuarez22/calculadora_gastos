@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import FilaCalculadora from '../components/FilaCalculadora.vue'
 import type { PresupuestoViewModel } from '@/models/Presupuesto.ViewModel' // Asegurado el casing correcto
 import Toast from '@/components/Toast.vue'
-import type { NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
+import type { EditarPesupuestoDto, NuevoPresupuestoDto } from '@/models/NuevoPresupuesto.dto'
 import { PresupuestoService } from '@/services/PresupuestoService'
 import { CostoService } from '@/services/CostoService'
 import { useRoute, useRouter } from 'vue-router'
@@ -97,16 +97,33 @@ const guardarPResupuesto = async () => {
   cargando.value = true
 
   try {
-    const dtoGuardar: NuevoPresupuestoDto = {
-      filas: presupuesto.value.filas.map((x) => ({ descripcion: x.nombre, monto: x.monto })),
-      presupuesto: presupuesto.value.presupuesto.nombre,
-      salario: presupuesto.value.presupuesto.salario,
-      descripcionPresupuesto: presupuesto.value.presupuesto.descripcion ?? undefined,
+    if (presupuesto.value.presupuesto.id == 0) {
+      const dtoGuardar: NuevoPresupuestoDto = {
+        filas: presupuesto.value.filas.map((x) => ({ descripcion: x.nombre, monto: x.monto })),
+        presupuesto: presupuesto.value.presupuesto.nombre,
+        salario: presupuesto.value.presupuesto.salario,
+        descripcionPresupuesto: presupuesto.value.presupuesto.descripcion ?? undefined,
+      }
+
+      const respuesta = await PresupuestoService.guardarPresupuestoCompleto(dtoGuardar)
+      presupuesto.value = respuesta
+    } else {
+      //Se trata de una edicion
+      const dtoEditar: EditarPesupuestoDto = {
+        filas: presupuesto.value.filas.map((x) => ({
+          descripcion: x.nombre,
+          monto: x.monto,
+          id: x.id,
+        })),
+        presupuesto: presupuesto.value.presupuesto.nombre,
+        salario: presupuesto.value.presupuesto.salario,
+        descripcionPresupuesto: presupuesto.value.presupuesto.descripcion ?? undefined,
+        id: presupuesto.value.presupuesto.id,
+      }
+
+      const respuesta = await PresupuestoService.editarPresupuestoCompleto(dtoEditar)
+      presupuesto.value = respuesta
     }
-
-    const respuesta = await PresupuestoService.guardarPresupuestoCompleto(dtoGuardar)
-    presupuesto.value = respuesta
-
     toastRef.value?.mostrar('Presupuesto guardado correctamente.', 'success')
     fueEnviado.value = false
   } catch (error) {
